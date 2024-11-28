@@ -1,0 +1,11 @@
+<h2 class="ms-5">Mes lists</h2>
+
+<div>
+  <% @lists.each do |list| %>
+    <div class="text-center">
+       <div class="p-5 border">
+        <h2><%= link_to list.name, list_path(list) %></h2>
+       </div>
+    </div>
+  <% end %>
+</div>

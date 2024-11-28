@@ -7,3 +7,33 @@
 #   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
 #     MovieGenre.find_or_create_by!(name: genre_name)
 #   end
+
+require 'uri'
+require 'net/http'
+require 'json'
+
+Movie.destroy_all
+
+puts "Fetching movies from TMDB API..."
+url = URI("https://tmdb.lewagon.com/movie/top_rated")
+
+http = Net::HTTP.new(url.host, url.port)
+http.use_ssl = true
+
+request = Net::HTTP::Get.new(url)
+request["accept"] = 'application/json'
+
+response = http.request(request)
+movies = JSON.parse(response.read_body)
+
+puts "Creating movies from API..."
+movies["results"].each do |movie|
+  Movie.create!(
+    title: movie["title"],
+    overview: movie["overview"],
+    poster_url: "https://image.tmdb.org/t/p/original#{movie["poster_path"]}",
+    rating: movie["vote_average"]
+  )
+end
+
+puts "Created #{Movie.count} movies!"
